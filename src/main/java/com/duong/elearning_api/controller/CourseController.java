@@ -1,6 +1,7 @@
 package com.duong.elearning_api.controller;
 
 import com.duong.elearning_api.dto.request.CreateCourseRequest;
+import com.duong.elearning_api.dto.request.UpdateCourseRequest;
 import com.duong.elearning_api.dto.response.ApiResponse;
 import com.duong.elearning_api.dto.response.CourseDetailResponse;
 import com.duong.elearning_api.entity.Course;
@@ -44,14 +45,21 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CourseDetailResponse> updateCourse(@PathVariable String id, @RequestBody Course course) {
-        CourseDetailResponse updated = courseService.updateCourse(id, course);
-        return ResponseEntity.ok(updated);
+    public ApiResponse<CourseDetailResponse> updateCourse(@PathVariable String id, @RequestBody @Valid UpdateCourseRequest request) {
+        CourseDetailResponse data = courseService.updateCourse(id, request);
+        return ApiResponse.<CourseDetailResponse>builder()
+                .code(200)
+                .message("Update course successfully")
+                .data(data)
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable String id) {
+    public ApiResponse<Void> deleteCourse(@PathVariable String id) {
         courseService.deleteCourse(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("Delete course successfully")
+                .build();
     }
 }

@@ -2,6 +2,8 @@ package com.duong.elearning_api.service.impl;
 
 import com.duong.elearning_api.common.CourseStatus;
 import com.duong.elearning_api.dto.request.CreateCourseRequest;
+import com.duong.elearning_api.dto.request.UpdateCourseRequest;
+import com.duong.elearning_api.dto.response.ChapterResponse;
 import com.duong.elearning_api.dto.response.CourseDetailResponse;
 import com.duong.elearning_api.entity.Course;
 import com.duong.elearning_api.exception.AppException;
@@ -40,18 +42,28 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseDetailResponse updateCourse(String id, Course course) {
-        Course existingCourse = courseRepository.findById(id)
+    public CourseDetailResponse updateCourse(String id, UpdateCourseRequest request) {
+        Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
-        existingCourse.setTitle(course.getTitle());
-        existingCourse.setDescription(course.getDescription());
-        existingCourse.setPrice(course.getPrice());
-        existingCourse.setLevel(course.getLevel());
-        existingCourse.setStatus(course.getStatus());
+        if (request.title() != null) {
+            course.setTitle(request.title());
+        }
+        if (request.description() != null) {
+            course.setDescription(request.description());
+        }
+        if (request.price() != null) {
+            course.setPrice(request.price());
+        }
+        if (request.level() != null) {
+            course.setLevel(request.level());
+        }
+        if (request.status() != null) {
+            course.setStatus(request.status());
+        }
 
-        courseRepository.save(existingCourse);
-        return mapToDetailResponse(existingCourse);
+        courseRepository.save(course);
+        return mapToDetailResponse(course);
     }
 
     @Override
@@ -76,6 +88,15 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private CourseDetailResponse mapToDetailResponse(Course course) {
+        List<ChapterResponse> chapterResponses = course.getChapters() != null
+                ? course.getChapters().stream()
+                  .map(chapter -> ChapterResponse.builder()
+                          .id(chapter.getId())
+                          .title(chapter.getTitle())
+                          .orderIndex(chapter.getOrderIndex())
+                          .build()).toList()
+                : List.of();
+
         return CourseDetailResponse.builder()
                 .id(course.getId())
                 .title(course.getTitle())
@@ -85,6 +106,7 @@ public class CourseServiceImpl implements CourseService {
                 .status(course.getStatus())
                 .thumbnailUrl(course.getThumbnailUrl())
                 .isActive(course.getIsActive())
+                .chapters(chapterResponses)
                 .createdAt(course.getCreatedAt())
                 .updatedAt(course.getUpdatedAt())
                 .build();
