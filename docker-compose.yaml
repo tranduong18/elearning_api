@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:18.4
+    container_name: postgres-elearning-api
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: elearning_api
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d elearning_api"]
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    networks:
+      - elearning-network
+
+volumes:
+  postgres-data:
+
+networks:
+  elearning-network:
