@@ -14,10 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Chapter extends BaseEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
     @Column(nullable = false, length = 200)
     private String title;
 
