@@ -3,6 +3,7 @@ package com.duong.elearning_api.controller;
 import com.duong.elearning_api.dto.request.CreateCourseRequest;
 import com.duong.elearning_api.dto.request.UpdateCourseRequest;
 import com.duong.elearning_api.dto.response.ApiResponse;
+import com.duong.elearning_api.dto.response.CourseCurriculumResponse;
 import com.duong.elearning_api.dto.response.CourseDetailResponse;
 import com.duong.elearning_api.entity.Course;
 import com.duong.elearning_api.service.CourseService;
@@ -27,11 +28,6 @@ public class CourseController {
                 .message("Create course successfully")
                 .data(data)
                 .build();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(courseService.getAllCourses());
     }
 
     @GetMapping("/{id}")
@@ -60,6 +56,26 @@ public class CourseController {
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Delete course successfully")
+                .build();
+    }
+
+    @GetMapping("/with-chapters")
+    public ApiResponse<List<CourseDetailResponse>> getAllCoursesWithChapters() {
+        List<CourseDetailResponse> data = courseService.getAllCoursesWithChapters();
+        return ApiResponse.<List<CourseDetailResponse>>builder()
+                .code(200)
+                .message("Get list courses successfully")
+                .data(data)
+                .build();
+    }
+
+    @GetMapping("/{id}/curriculum")
+    public ApiResponse<CourseCurriculumResponse> getCourseCurriculum(@PathVariable String id) {
+        CourseCurriculumResponse data = courseService.getCourseCurriculum(id);
+        return ApiResponse.<CourseCurriculumResponse>builder()
+                .code(200)
+                .message("Get full course successfully")
+                .data(data)
                 .build();
     }
 }

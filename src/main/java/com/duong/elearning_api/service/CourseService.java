@@ -2,6 +2,7 @@ package com.duong.elearning_api.service;
 
 import com.duong.elearning_api.dto.request.CreateCourseRequest;
 import com.duong.elearning_api.dto.request.UpdateCourseRequest;
+import com.duong.elearning_api.dto.response.CourseCurriculumResponse;
 import com.duong.elearning_api.dto.response.CourseDetailResponse;
 import com.duong.elearning_api.entity.Course;
 
@@ -14,7 +15,9 @@ public interface CourseService {
 
     CourseDetailResponse getCourseById(String id);
 
-    List<Course> getAllCourses();
+    List<CourseDetailResponse> getAllCoursesWithChapters();
 
     void deleteCourse(String id);
+
+    CourseCurriculumResponse getCourseCurriculum(String courseId);
 }
