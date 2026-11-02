@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +40,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
 
-    // 2. Bắt lỗi sai quy chuẩn dữ liệu đầu vào (@Valid)
+    // Bắt lỗi sai quy chuẩn dữ liệu đầu vào (@Valid)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e, WebRequest request
@@ -62,7 +63,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    // 3. Bắt toàn bộ các lỗi máy chủ chưa lường trước (fallback 500)
+    // Bắt lỗi sai tên đăng nhập hoặc mật khẩu
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException exception, WebRequest request) {
+        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+        String path = request.getDescription(false).replace("uri=", "");
+
+        log.error("BadCredentialsException occurred on path={}: ", path, exception);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .message(errorCode.getMessage())
+                .timestamp(LocalDateTime.now())
+                .path(path)
+                .build();
+
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    // Bắt toàn bộ các lỗi máy chủ chưa lường trước (fallback 500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUncategorizedException(
             Exception exception, WebRequest request
