@@ -21,6 +21,10 @@ public enum ErrorCode {
     // User
     USER_EXISTED(1005, "Người dùng đã tồn tại trong hệ thống", HttpStatus.CONFLICT),
     USER_NOT_FOUND(1006, "Người dùng không tồn tại trên hệ thống", HttpStatus.NOT_FOUND),
+
+    // Token
+    REFRESH_TOKEN_NOT_FOUND(1007, "Refresh token không tồn tại trên hệ thống", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_EXPIRED(1008, "Refresh token đã hết hạn hoặc bị thu hồi", HttpStatus.UNAUTHORIZED),
     ;
 
     private final int code;

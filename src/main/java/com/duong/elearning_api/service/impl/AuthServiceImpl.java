@@ -1,10 +1,16 @@
 package com.duong.elearning_api.service.impl;
 
+import com.duong.elearning_api.common.TokenType;
+import com.duong.elearning_api.dto.request.IntrospectRequest;
 import com.duong.elearning_api.dto.request.LoginRequest;
+import com.duong.elearning_api.dto.request.RefreshTokenRequest;
+import com.duong.elearning_api.dto.response.IntrospectResponse;
 import com.duong.elearning_api.dto.response.LoginResponse;
+import com.duong.elearning_api.entity.Token;
 import com.duong.elearning_api.entity.User;
 import com.duong.elearning_api.exception.AppException;
 import com.duong.elearning_api.exception.ErrorCode;
+import com.duong.elearning_api.repository.TokenRepository;
 import com.duong.elearning_api.security.JwtService;
 import com.duong.elearning_api.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +20,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,8 +33,10 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final TokenRepository tokenRepository;
 
     @Override
+    @Transactional
     public LoginResponse login(LoginRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 request.email(),
@@ -46,9 +57,48 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateAccessToken(user.getId(), authorities);
         String refreshToken = jwtService.generateRefreshToken(user.getId());
 
+        Token token = Token.builder()
+                .token(refreshToken)
+                .tokenType(TokenType.REFRESH_TOKEN)
+                .user(user)
+                .expiryDate(Instant.now().plus(14, ChronoUnit.DAYS))
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
+
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .roles(authorities)
+                .build();
+    }
+
+    @Override
+    public IntrospectResponse introspect(IntrospectRequest request) {
+        return jwtService.introspectToken(request.token());
+    }
+
+    @Override
+    @Transactional
+    public LoginResponse refreshToken(RefreshTokenRequest request) {
+        Token token = tokenRepository.findByToken(request.refreshToken())
+                .orElseThrow(() -> new AppException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+
+        // Kiểm tra xem token đã bị thu hồi hoặc quá hạn chưa
+        if(token.getRevoked() || token.getExpiryDate().isBefore(Instant.now())){
+            throw new AppException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+        }
+
+        User user = token.getUser();
+        Set<String> authorities = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        String newAccessToken = jwtService.generateAccessToken(user.getId(), authorities);
+
+        return LoginResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(request.refreshToken())
                 .roles(authorities)
                 .build();
     }
