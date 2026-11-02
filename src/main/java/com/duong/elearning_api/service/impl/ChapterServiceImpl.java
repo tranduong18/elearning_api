@@ -11,6 +11,7 @@ import com.duong.elearning_api.repository.CourseRepository;
 import com.duong.elearning_api.service.ChapterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ChapterServiceImpl implements ChapterService {
     private final CourseRepository courseRepository;
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ChapterResponse createChapter(CreateChapterRequest request) {
         Course course = courseRepository.findById(request.courseId())
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));

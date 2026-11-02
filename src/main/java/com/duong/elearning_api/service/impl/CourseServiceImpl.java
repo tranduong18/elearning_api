@@ -13,6 +13,7 @@ import com.duong.elearning_api.repository.CourseRepository;
 import com.duong.elearning_api.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class CourseServiceImpl implements CourseService {
     private final ChapterRepository chapterRepository;
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public CourseDetailResponse createCourse(CreateCourseRequest request) {
         if(courseRepository.existsByTitleIgnoreCase(request.title())){
             throw new AppException(ErrorCode.COURSE_TITLE_DUPLICATE);
@@ -44,6 +46,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public CourseDetailResponse updateCourse(String id, UpdateCourseRequest request) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
@@ -84,8 +87,8 @@ public class CourseServiceImpl implements CourseService {
                 .toList();
     }
 
-
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteCourse(String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
