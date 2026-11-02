@@ -19,7 +19,8 @@ public enum ErrorCode {
     CHAPTER_NOT_FOUND(1004, "Không tìm thấy Chapter", HttpStatus.NOT_FOUND),
 
     // User
-    USER_EXISTED(1005, "Người dùng đã tồn tại trong hệ thống", HttpStatus.CONFLICT)
+    USER_EXISTED(1005, "Người dùng đã tồn tại trong hệ thống", HttpStatus.CONFLICT),
+    USER_NOT_FOUND(1006, "Người dùng không tồn tại trên hệ thống", HttpStatus.NOT_FOUND),
     ;
 
     private final int code;
