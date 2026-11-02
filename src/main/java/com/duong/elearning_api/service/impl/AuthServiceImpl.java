@@ -1,9 +1,7 @@
 package com.duong.elearning_api.service.impl;
 
 import com.duong.elearning_api.common.TokenType;
-import com.duong.elearning_api.dto.request.IntrospectRequest;
-import com.duong.elearning_api.dto.request.LoginRequest;
-import com.duong.elearning_api.dto.request.RefreshTokenRequest;
+import com.duong.elearning_api.dto.request.*;
 import com.duong.elearning_api.dto.response.IntrospectResponse;
 import com.duong.elearning_api.dto.response.LoginResponse;
 import com.duong.elearning_api.entity.Token;
@@ -11,6 +9,7 @@ import com.duong.elearning_api.entity.User;
 import com.duong.elearning_api.exception.AppException;
 import com.duong.elearning_api.exception.ErrorCode;
 import com.duong.elearning_api.repository.TokenRepository;
+import com.duong.elearning_api.repository.UserRepository;
 import com.duong.elearning_api.security.JwtService;
 import com.duong.elearning_api.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -101,5 +103,39 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(request.refreshToken())
                 .roles(authorities)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void logout(LogoutRequest request) {
+        Token token = tokenRepository.findByToken(request.refreshToken())
+                .orElseThrow(() -> new AppException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+
+        token.setRevoked(true);
+        tokenRepository.save(token);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // 1. Kiểm tra mật khẩu cũ có đúng không
+        if(!passwordEncoder.matches(request.oldPassword(), user.getPassword())){
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        // 2. Không cho phép đặt mật khẩu mới trùng mật khẩu cũ
+        if(passwordEncoder.matches(request.newPassword(), user.getPassword())){
+            throw new AppException(ErrorCode.SAME_OLD_PASSWORD);
+        }
+
+        // 3. Mã hóa mật khẩu mới và lưu vào database
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+        // 4. Thu hồi toàn bộ Refresh Token cũ của người dùng này để bắt đăng nhập lại
+        tokenRepository.deleteByUser(user);
     }
 }

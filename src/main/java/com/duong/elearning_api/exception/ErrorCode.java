@@ -25,6 +25,10 @@ public enum ErrorCode {
     // Token
     REFRESH_TOKEN_NOT_FOUND(1007, "Refresh token không tồn tại trên hệ thống", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED(1008, "Refresh token đã hết hạn hoặc bị thu hồi", HttpStatus.UNAUTHORIZED),
+
+    // Password
+    PASSWORD_NOT_MATCH(1009, "Mật khẩu cũ không chính xác", HttpStatus.BAD_REQUEST),
+    SAME_OLD_PASSWORD(1010, "Mật khẩu mới không được trùng với mật khẩu cũ", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

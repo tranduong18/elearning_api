@@ -1,14 +1,14 @@
 package com.duong.elearning_api.controller;
 
-import com.duong.elearning_api.dto.request.IntrospectRequest;
-import com.duong.elearning_api.dto.request.LoginRequest;
-import com.duong.elearning_api.dto.request.RefreshTokenRequest;
+import com.duong.elearning_api.dto.request.*;
 import com.duong.elearning_api.dto.response.ApiResponse;
 import com.duong.elearning_api.dto.response.IntrospectResponse;
 import com.duong.elearning_api.dto.response.LoginResponse;
 import com.duong.elearning_api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +48,28 @@ public class AuthController {
                 .code(200)
                 .message("Introspect token successfully")
                 .data(data)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@Valid @RequestBody LogoutRequest request){
+        authService.logout(request);
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("Logout successfully")
+                .build();
+    }
+
+    @PostMapping("/change-password")
+    public ApiResponse<Void> changePassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody ChangePasswordRequest request
+    ){
+        String userId = jwt.getSubject();
+        authService.changePassword(userId, request);
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("Change password successfully")
                 .build();
     }
 }
