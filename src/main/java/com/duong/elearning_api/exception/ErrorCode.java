@@ -21,6 +21,10 @@ public enum ErrorCode {
     // Chapter
     CHAPTER_NOT_FOUND(1004, "Không tìm thấy Chapter", HttpStatus.NOT_FOUND),
 
+    // Lesson
+    LESSON_NOT_FOUND(1014, "Không tìm thấy bài học theo yêu cầu", HttpStatus.NOT_FOUND),
+
+
     // User
     USER_EXISTED(1005, "Người dùng đã tồn tại trong hệ thống", HttpStatus.CONFLICT),
     USER_NOT_FOUND(1006, "Người dùng không tồn tại trên hệ thống", HttpStatus.NOT_FOUND),

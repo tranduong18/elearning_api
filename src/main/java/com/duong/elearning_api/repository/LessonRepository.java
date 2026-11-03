@@ -9,4 +9,7 @@ public interface LessonRepository extends JpaRepository<Lesson, String> {
     List<Lesson> findAllByChapterIdOrderByOrderIndexAsc(String chapterId);
 
     long countByChapterId(String chapterId);
+
+    // Đếm tổng số lượng bài học có trong tất cả các chương của một khóa học
+    long countByChapter_CourseId(String courseId);
 }

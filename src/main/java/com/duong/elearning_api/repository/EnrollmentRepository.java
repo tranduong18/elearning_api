@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, String> {
@@ -13,4 +14,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, String> 
 
     // Lấy danh sách khóa học đã đăng ký của học viên, sắp xếp mới nhất lên đầu
     List<Enrollment> findAllByUserIdOrderByCreatedAtDesc(String userId);
+
+    // Tìm kiếm bản ghi đăng ký cụ thể của học viên trên khóa học
+    Optional<Enrollment> findByUserIdAndCourseId(String userId, String courseId);
 }
