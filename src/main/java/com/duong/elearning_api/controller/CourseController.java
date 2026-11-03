@@ -5,11 +5,9 @@ import com.duong.elearning_api.dto.request.UpdateCourseRequest;
 import com.duong.elearning_api.dto.response.ApiResponse;
 import com.duong.elearning_api.dto.response.CourseCurriculumResponse;
 import com.duong.elearning_api.dto.response.CourseDetailResponse;
-import com.duong.elearning_api.entity.Course;
 import com.duong.elearning_api.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

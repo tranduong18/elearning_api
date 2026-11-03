@@ -15,6 +15,8 @@ public enum ErrorCode {
     COURSE_NOT_FOUND(1001, "Không tìm thấy khóa học theo yêu cầu", HttpStatus.NOT_FOUND),
     COURSE_TITLE_DUPLICATE(1002, "Tiêu đề khóa học đã tồn tại trong hệ thống", HttpStatus.BAD_REQUEST),
     INVALID_KEY(1003, "Khóa định danh không hợp lệ", HttpStatus.BAD_REQUEST),
+    COURSE_ALREADY_ENROLLED(1012, "Học viên đã đăng ký khóa học này rồi", HttpStatus.BAD_REQUEST),
+    COURSE_NOT_PUBLISHED(1013, "Khóa học chưa được công khai để đăng ký", HttpStatus.BAD_REQUEST),
 
     // Chapter
     CHAPTER_NOT_FOUND(1004, "Không tìm thấy Chapter", HttpStatus.NOT_FOUND),
