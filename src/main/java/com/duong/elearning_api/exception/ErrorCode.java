@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Lỗi máy chủ không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
-    UNAUTHENTICATED(1000, "Email hoặc mật khẩu không chính xác", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED(1000, "Unauthorized", HttpStatus.UNAUTHORIZED),
+    ACCESS_DENIED(1011, "Access denied", HttpStatus.FORBIDDEN),
 
     // Course
     COURSE_NOT_FOUND(1001, "Không tìm thấy khóa học theo yêu cầu", HttpStatus.NOT_FOUND),

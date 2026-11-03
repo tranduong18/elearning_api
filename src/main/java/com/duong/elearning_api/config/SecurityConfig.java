@@ -1,5 +1,8 @@
 package com.duong.elearning_api.config;
 
+import com.duong.elearning_api.security.CustomAccessDeniedHandler;
+import com.duong.elearning_api.security.CustomAuthenticationEntryPoint;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +24,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,7 +32,10 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final CorsConfigurationSource corsConfigurationSource;
+
     @Value("${jwt.secret-key}")
     private String secretKey;
 
@@ -42,8 +49,9 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http){
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -52,10 +60,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,GET_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                        jwt -> jwt
-                                .decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                        .jwt(jwt -> jwt
+                            .decoder(jwtDecoder())
+                            .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ))
                 .build();
     }

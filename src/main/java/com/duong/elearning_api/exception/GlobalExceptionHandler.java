@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -70,6 +71,25 @@ public class GlobalExceptionHandler {
         String path = request.getDescription(false).replace("uri=", "");
 
         log.error("BadCredentialsException occurred on path={}: ", path, exception);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .message(errorCode.getMessage())
+                .timestamp(LocalDateTime.now())
+                .path(path)
+                .build();
+
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    // Bắt lỗi quyền truy cập
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException exception, WebRequest request) {
+        ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
+        String path = request.getDescription(false).replace("uri=", "");
+
+        log.error("Access denied occurred on path={}: ", path, exception);
 
         ErrorResponse response = ErrorResponse.builder()
                 .code(errorCode.getCode())
