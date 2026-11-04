@@ -24,10 +24,15 @@ public enum ErrorCode {
     // Lesson
     LESSON_NOT_FOUND(1014, "Không tìm thấy bài học theo yêu cầu", HttpStatus.NOT_FOUND),
 
-
     // User
     USER_EXISTED(1005, "Người dùng đã tồn tại trong hệ thống", HttpStatus.CONFLICT),
     USER_NOT_FOUND(1006, "Người dùng không tồn tại trên hệ thống", HttpStatus.NOT_FOUND),
+
+    // Review
+    NOT_ENROLLED(1014, "Bạn chưa đăng ký khóa học này nên không thể đánh giá", HttpStatus.FORBIDDEN),
+    REVIEW_ALREADY_EXISTS(1015, "Bạn đã đánh giá khóa học này rồi", HttpStatus.BAD_REQUEST),
+    REVIEW_NOT_FOUND(1016, "Không tìm thấy đánh giá yêu cầu", HttpStatus.NOT_FOUND),
+    UNAUTHORIZED_REVIEW_ACCESS(1017, "Bạn không có quyền chỉnh sửa hoặc xóa đánh giá này", HttpStatus.FORBIDDEN),
 
     // Token
     REFRESH_TOKEN_NOT_FOUND(1007, "Refresh token không tồn tại trên hệ thống", HttpStatus.UNAUTHORIZED),
