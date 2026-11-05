@@ -15,8 +15,21 @@ services:
     networks:
       - elearning-network
 
+  redis:
+    image: redis:8.6.4
+    container_name: redis-elearning-api
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    networks:
+      - elearning-network
+
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   elearning-network:

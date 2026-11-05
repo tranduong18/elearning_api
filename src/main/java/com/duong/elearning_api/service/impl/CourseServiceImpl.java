@@ -1,6 +1,7 @@
 package com.duong.elearning_api.service.impl;
 
 import com.duong.elearning_api.common.CourseStatus;
+import com.duong.elearning_api.config.CacheConfig;
 import com.duong.elearning_api.dto.request.CreateCourseRequest;
 import com.duong.elearning_api.dto.request.UpdateCourseRequest;
 import com.duong.elearning_api.dto.response.*;
@@ -15,6 +16,8 @@ import com.duong.elearning_api.service.FileStorageService;
 import com.duong.elearning_api.utils.CloudinaryUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,10 +54,14 @@ public class CourseServiceImpl implements CourseService {
         return mapToDetailResponse(course);
     }
 
+    // Hàm cập nhật: Xóa key cache trong Redis ngay khi cập nhật Database thành công
     @Override
     @PreAuthorize("hasAuthority('USER')")
+    @CacheEvict(value = CacheConfig.COURSE_CURRICULUM_CACHE, key = "#id")
     @Transactional
     public CourseDetailResponse updateCourse(String id, UpdateCourseRequest request) {
+        log.info("==> [CACHE EVICT] Updating course and evicting cache for id: {}", id);
+
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
@@ -111,6 +118,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
+    @CacheEvict(value = CacheConfig.COURSE_CURRICULUM_CACHE, key = "#id")
     public void deleteCourse(String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
@@ -118,8 +126,13 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.save(course);
     }
 
+    // Gắn @Cacheable: Toàn bộ cấu trúc khóa học được lưu trong cache COURSE_CURRICULUM_CACHE với key là id khóa học
     @Override
+    @Cacheable(value = CacheConfig.COURSE_CURRICULUM_CACHE, key = "#courseId")
+    @Transactional(readOnly = true)
     public CourseCurriculumResponse getCourseCurriculum(String courseId) {
+        log.info("==> [DATABASE QUERY] Fetching course curriculum from database for courseId: {}", courseId);
+
         // Query 1: Lấy thông tin cơ bản của Course
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
