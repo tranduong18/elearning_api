@@ -4,6 +4,7 @@ import com.duong.elearning_api.common.CourseLevel;
 import com.duong.elearning_api.common.CourseStatus;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 import java.math.BigDecimal;
 
@@ -18,6 +19,8 @@ public record UpdateCourseRequest(
     BigDecimal price,
 
     CourseLevel level,
-    CourseStatus status
+    CourseStatus status,
+    @URL(message = "Đường dẫn ảnh đại diện phải là một URL hợp lệ")
+    String thumbnailUrl
 ) {
 }

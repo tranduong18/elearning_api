@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 import java.math.BigDecimal;
 
@@ -21,6 +22,9 @@ public record CreateCourseRequest(
         BigDecimal price,
 
         @NotNull(message = "Cấp độ khóa học không được để trống")
-        CourseLevel level
+        CourseLevel level,
+
+        @URL(message = "Đường dẫn ảnh đại diện phải là một URL hợp lệ")
+        String thumbnailUrl
 ) {
 }

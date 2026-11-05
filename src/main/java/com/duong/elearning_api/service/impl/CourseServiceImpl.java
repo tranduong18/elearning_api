@@ -11,10 +11,13 @@ import com.duong.elearning_api.exception.ErrorCode;
 import com.duong.elearning_api.repository.ChapterRepository;
 import com.duong.elearning_api.repository.CourseRepository;
 import com.duong.elearning_api.service.CourseService;
+import com.duong.elearning_api.service.FileStorageService;
+import com.duong.elearning_api.utils.CloudinaryUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,9 +27,11 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final ChapterRepository chapterRepository;
+    private final FileStorageService fileStorageService;
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     public CourseDetailResponse createCourse(CreateCourseRequest request) {
         if(courseRepository.existsByTitleIgnoreCase(request.title())){
             throw new AppException(ErrorCode.COURSE_TITLE_DUPLICATE);
@@ -38,6 +43,7 @@ public class CourseServiceImpl implements CourseService {
                 .price(request.price())
                 .level(request.level())
                 .status(CourseStatus.DRAFT)
+                .thumbnailUrl(request.thumbnailUrl() != null ? request.thumbnailUrl().trim() : null)
                 .isActive(true)
                 .build();
 
@@ -46,7 +52,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     public CourseDetailResponse updateCourse(String id, UpdateCourseRequest request) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
@@ -65,6 +72,21 @@ public class CourseServiceImpl implements CourseService {
         }
         if (request.status() != null) {
             course.setStatus(request.status());
+        }
+
+        if (request.thumbnailUrl() != null) {
+            String newThumbnailUrl = request.thumbnailUrl().trim();
+            String oldThumbnailUrl = course.getThumbnailUrl();
+
+            // Nếu khóa học đã có ảnh cũ và ảnh mới khác ảnh cũ -> Tự động dọn dẹp ảnh cũ trên Cloudinary
+            if(oldThumbnailUrl != null && !oldThumbnailUrl.isBlank() && !oldThumbnailUrl.equals(newThumbnailUrl)){
+                String oldPublicId = CloudinaryUtils.extractPublicId(oldThumbnailUrl);
+                if(oldPublicId != null){
+                    log.info("Detected old thumbnail for courseId={}, proceeding to delete publicId={}", id, oldPublicId);
+                    fileStorageService.deleteImage(oldPublicId);
+                }
+            }
+            course.setThumbnailUrl(newThumbnailUrl);
         }
 
         courseRepository.save(course);

@@ -34,6 +34,12 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(1016, "Không tìm thấy đánh giá yêu cầu", HttpStatus.NOT_FOUND),
     UNAUTHORIZED_REVIEW_ACCESS(1017, "Bạn không có quyền chỉnh sửa hoặc xóa đánh giá này", HttpStatus.FORBIDDEN),
 
+    // File
+    FILE_EMPTY(4001, "Tệp tin tải lên không được để trống", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE(4002, "Kích thước tệp vượt quá dung lượng cho phép (tối đa 10MB)", HttpStatus.BAD_REQUEST),
+    INVALID_IMAGE_FORMAT(4003, "Định dạng ảnh không hợp lệ (chỉ hỗ trợ JPG, JPEG, PNG, WEBP)", HttpStatus.BAD_REQUEST),
+    UPLOAD_FAILED(4004, "Tải tệp tin lên Cloudinary thất bại", HttpStatus.INTERNAL_SERVER_ERROR),
+
     // Token
     REFRESH_TOKEN_NOT_FOUND(1007, "Refresh token không tồn tại trên hệ thống", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED(1008, "Refresh token đã hết hạn hoặc bị thu hồi", HttpStatus.UNAUTHORIZED),

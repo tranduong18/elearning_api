@@ -1,4 +1,9 @@
 spring:
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
@@ -34,3 +39,8 @@ jwt:
   secret-key: ${JWT_SECRET_KEY}
   access-token-expiration-seconds: 7200
   refresh-token-expiration-seconds: 1209600
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
