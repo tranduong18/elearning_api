@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào mừng gia nhập E-Learning Platform</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            padding: 30px 25px;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #1e3c72;
+            font-size: 18px;
+            margin-top: 0;
+        }
+        .btn-wrapper {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            background-color: #0d6efd;
+            color: #ffffff !important;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>E-LEARNING PLATFORM</h1>
+        <p style="margin: 5px 0 0; font-size: 14px; opacity: 0.9;">Nâng Tầm Kỹ Năng Lập Trình Thực Chiến</p>
+    </div>
+    <div class="content">
+        <h2>Xin chào <span th:text="${name}" style="color: #0d6efd;">Học Viên</span>! 👋</h2>
+        <p>Chúc mừng bạn đã tạo tài khoản thành công tại nền tảng học trực tuyến <strong>E-Learning Platform</strong>.</p>
+        <p>Tài khoản với email <strong th:text="${email}">student@elearning.vn</strong> đã sẵn sàng. Hãy bấm vào nút bên dưới để đăng nhập và bắt đầu lộ trình chinh phục kiến thức ngay hôm nay:</p>
+
+        <div class="btn-wrapper">
+            <a th:href="${loginUrl}" class="btn" target="_blank">Bắt Đầu Học Ngay 🚀</a>
+        </div>
+
+        <p style="font-size: 14px; color: #6c757d;">Nếu nút bấm trên không hoạt động, bạn có thể copy đường dẫn sau dán vào trình duyệt:<br>
+            <span th:text="${loginUrl}" style="color: #0d6efd; word-break: break-all;">http://localhost:3000/login</span></p>
+    </div>
+    <div class="footer">
+        <p style="margin: 0;">© 2026 E-Learning Platform. Mọi quyền được bảo lưu.</p>
+        <p style="margin: 5px 0 0;">Email này được gửi tự động, vui lòng không phản hồi trực tiếp vào hòm thư này.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -10,6 +10,7 @@ import com.duong.elearning_api.exception.AppException;
 import com.duong.elearning_api.exception.ErrorCode;
 import com.duong.elearning_api.repository.RoleRepository;
 import com.duong.elearning_api.repository.UserRepository;
+import com.duong.elearning_api.service.EmailService;
 import com.duong.elearning_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public CreateUserResponse createUser(CreateUserRequest request) {
@@ -50,6 +54,20 @@ public class UserServiceImpl implements UserService {
 
         user.addRole(defaultRole);
         userRepository.save(user);
+
+        // Send email verification
+        Map<String, Object> emailVariables = Map.of(
+          "name", user.getFullName(),
+          "email", user.getEmail(),
+           "loginUrl", "http://localhost:3000/login"
+        );
+
+        emailService.sendHtmlEmail(
+                user.getEmail(),
+                "Chào mừng bạn gia nhập nền tảng E-Learning!",
+                "welcome-email",
+                emailVariables
+        );
 
         return CreateUserResponse.builder()
                 .id(user.getId())

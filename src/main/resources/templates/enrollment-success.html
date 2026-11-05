@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký khóa học thành công</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .content {
+            padding: 30px 25px;
+            line-height: 1.6;
+        }
+        .invoice-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .invoice-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px dashed #cbd5e1;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .label {
+            color: #64748b;
+        }
+        .value {
+            color: #1e293b;
+            text-align: right;
+        }
+        .price {
+            color: #059669;
+        }
+        .btn-wrapper {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            background-color: #10b981;
+            color: #ffffff !important;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>ĐĂNG KÝ KHÓA HỌC THÀNH CÔNG</h1>
+        <p style="margin: 5px 0 0; font-size: 14px; opacity: 0.9;">Chúc mừng bạn đã ghi danh vào khóa học!</p>
+    </div>
+    <div class="content">
+        <p>Xin chào <strong th:text="${studentName}">Nguyễn Văn An</strong>,</p>
+        <p>Hệ thống đã ghi nhận bạn đăng ký thành công khóa học trên nền tảng <strong>E-Learning Platform</strong>. Dưới đây là thông tin chi tiết biên lai giao dịch của bạn:</p>
+
+        <div class="invoice-card">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px 0; color: #64748b;">Mã Đăng Ký (Enrollment ID):</td>
+                    <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #1e293b;" th:text="${'#ENR-' + enrollmentId}">#ENR-1</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px 0; color: #64748b;">Tên Khóa Học:</td>
+                    <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #1e293b;" th:text="${courseTitle}">Lập Trình Spring Boot Chuyên Sâu</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px 0; color: #64748b;">Thời Gian Đăng Ký:</td>
+                    <td style="padding: 8px 0; text-align: right; color: #1e293b;" th:text="${enrolledDate}">25/10/2026 16:30</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 0 0; font-weight: bold; color: #1e293b; font-size: 16px;">Học Phí Đã Thanh Toán:</td>
+                    <td style="padding: 12px 0 0; text-align: right; font-weight: bold; color: #059669; font-size: 16px;" th:text="${pricePaid}">799.000 ₫</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="btn-wrapper">
+            <a th:href="${learnUrl}" class="btn" target="_blank">Học Ngay 🎓</a>
+        </div>
+
+        <p style="font-size: 13px; color: #64748b; text-align: center;">Khóa học này đã được cấp quyền truy cập trọn đời cho tài khoản của bạn.</p>
+    </div>
+    <div class="footer">
+        <p style="margin: 0;">© 2026 E-Learning Platform. Cảm ơn bạn đã tin tưởng đồng hành!</p>
+        <p style="margin: 5px 0 0;">Mọi thắc mắc xin vui lòng liên hệ: support@elearning.vn</p>
+    </div>
+</div>
+</body>
+</html>

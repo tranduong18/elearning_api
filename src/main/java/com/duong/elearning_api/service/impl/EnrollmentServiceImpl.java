@@ -12,13 +12,20 @@ import com.duong.elearning_api.exception.ErrorCode;
 import com.duong.elearning_api.repository.CourseRepository;
 import com.duong.elearning_api.repository.EnrollmentRepository;
 import com.duong.elearning_api.repository.UserRepository;
+import com.duong.elearning_api.service.EmailService;
 import com.duong.elearning_api.service.EnrollmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 @Slf4j(topic = "ENROLLMENT-SERVICE")
@@ -27,6 +34,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -58,6 +66,27 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .build();
         enrollmentRepository.save(enrollment);
 
+        // Send email notification
+        String formattedPrice = formatCurrency(enrollment.getPricePaid());
+        LocalDateTime enrolledAt = enrollment.getCreatedAt() != null ? enrollment.getCreatedAt() : LocalDateTime.now();
+        String formattedDate = enrolledAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        Map<String, Object> emailVariables = Map.of(
+                "studentName", user.getFullName(),
+                "enrollmentId", enrollment.getId(),
+                "courseTitle", course.getTitle(),
+                "pricePaid", formattedPrice,
+                "enrolledDate", formattedDate,
+                "learnUrl", "http://localhost:3000/courses/" + course.getId() + "/learn"
+        );
+
+        emailService.sendHtmlEmail(
+                user.getEmail(),
+                "Chúc mừng bạn đã đăng ký thành công khóa học: " + course.getTitle(),
+                "enrollment-success",
+                emailVariables
+        );
+
         return toEnrollmentResponse(enrollment);
     }
 
@@ -80,5 +109,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .status(enrollment.getStatus())
                 .enrolledAt(enrollment.getCreatedAt())
                 .build();
+    }
+
+    private String formatCurrency(BigDecimal amount) {
+        if(amount == null) return "0 ₫";
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.of("vi", "VN"));
+        return currencyFormatter.format(amount);
     }
 }
