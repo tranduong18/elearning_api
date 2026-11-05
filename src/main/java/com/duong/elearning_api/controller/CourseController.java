@@ -6,6 +6,8 @@ import com.duong.elearning_api.dto.response.ApiResponse;
 import com.duong.elearning_api.dto.response.CourseCurriculumResponse;
 import com.duong.elearning_api.dto.response.CourseDetailResponse;
 import com.duong.elearning_api.service.CourseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/courses")
 @RequiredArgsConstructor
+@Tag(name = "Course API", description = "API for managing courses")
 public class CourseController {
     private final CourseService courseService;
 
     @PostMapping
+    @Operation(summary = "Create a new course", description = "Create a new course with the provided details")
     public ApiResponse<CourseDetailResponse> createCourse(@RequestBody @Valid CreateCourseRequest request) {
         CourseDetailResponse data = courseService.createCourse(request);
         return ApiResponse.<CourseDetailResponse>builder()
@@ -29,6 +33,7 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a course by ID", description = "Get a course by its ID")
     public ApiResponse<CourseDetailResponse> getCourseById(@PathVariable String id) {
         CourseDetailResponse data = courseService.getCourseById(id);
         return ApiResponse.<CourseDetailResponse>builder()

@@ -44,6 +44,12 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   access-token-expiration-seconds: 7200
@@ -53,3 +59,8 @@ cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
+
+application:
+  swagger:
+    server-url: http://localhost:8080
+    server-description: Development Server
